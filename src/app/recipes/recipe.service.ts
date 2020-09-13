@@ -8,10 +8,12 @@ import { Subject } from 'rxjs';
 export class RecipeService{
     recipeChanged=new Subject<Recipe[]>();
 
-    private recipes:Recipe[]=[
-        new Recipe('chopa', 'sharp', 'none',[new Ingredient('razor',5)]),
-        new Recipe('dakka', 'boom', 'blah',[new Ingredient('smoke',6)]),
-      ];
+    // private recipes:Recipe[]=[
+    //     new Recipe('chopa', 'sharp', 'none',[new Ingredient('razor',5)]),
+    //     new Recipe('dakka', 'boom', 'blah',[new Ingredient('smoke',6)]),
+    // ];
+
+    private recipes:Recipe[]=[];
 
     constructor(private slService:ShoppingListService){}  
 
