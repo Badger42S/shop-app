@@ -2,6 +2,7 @@ import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 
 import {RecipeService} from '../recipes/recipe.service';
+import {Recipe} from '../recipes/recipe.modal';
 
 @Injectable({
     providedIn:'root'
@@ -19,5 +20,13 @@ export class DataStorageService {
                     console.log(response);
                 }
             );
+    }
+
+    fetchRecipe(){
+        this.httpClient.get<Recipe[]>('https://ng-course-ace87.firebaseio.com/recipes.json')
+            .subscribe(respData=>{
+                console.log(respData);
+                this.recipeService.setRecipes(respData);
+            })
     }
 }
