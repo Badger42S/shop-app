@@ -14,7 +14,7 @@ export class AuthComponent implements OnInit {
   ngOnInit(): void {
   }
 
-  onSubbmit(form:NgForm){
+  onSubmit(form:NgForm){
     console.log(form);
     form.reset();
   }
