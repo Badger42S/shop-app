@@ -4,6 +4,7 @@ import { catchError, tap } from 'rxjs/operators';
 import { BehaviorSubject, throwError } from 'rxjs';
 
 import { UserModel } from './auth.model';
+import { Router } from '@angular/router';
 
 export interface AuthResponse {
     idToken: string,
@@ -18,7 +19,7 @@ export interface AuthResponse {
 export class AuthService{
     userSubject = new BehaviorSubject<UserModel>(null);
 
-    constructor(private http: HttpClient){}
+    constructor(private http: HttpClient, private router: Router){}
     
     signup(email:string, password:string){
         return this.http.post<AuthResponse>('https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyAGMAMq5OfCn7KjQGERb-2DBP4522w0ZKM',
@@ -58,6 +59,11 @@ export class AuthService{
                 );
             })
         );
+    }
+
+    logout(){
+        this.userSubject.next(null);
+        this.router.navigate(['/auth']);
     }
 
     private handleAuth(email:string, userId:string, token:string, experationIn:number){
