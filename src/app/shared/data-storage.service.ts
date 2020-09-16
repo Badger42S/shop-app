@@ -25,16 +25,9 @@ export class DataStorageService {
     }
 
     fetchRecipe(){
-        return this.authService.userSubject.pipe(
-            take(1),
-            exhaustMap(user=>{
-                return this.httpClient.get<Recipe[]>(
-                    'https://ng-course-ace87.firebaseio.com/recipes.json',
-                    {
-                        params: new HttpParams().set('auth', user.token)
-                    }
-                );
-            }),
+        return this.httpClient.get<Recipe[]>(
+            'https://ng-course-ace87.firebaseio.com/recipes.json'
+        ).pipe(
             map(recipes=>{
                 return recipes.map(recipe=>{
                     return {...recipe, ingredients: recipe.ingredients ? recipe.ingredients : []} 
@@ -43,7 +36,6 @@ export class DataStorageService {
             tap(respData=>{
                 console.log(respData);
                 this.recipeService.setRecipes(respData);}
-            )
-        );
+        ));
     }
 }
