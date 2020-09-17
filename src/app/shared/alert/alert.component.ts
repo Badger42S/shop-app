@@ -1,9 +1,9 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 
 @Component({
-    selector:'app-component',
-    templateUrl:'./alert/alert.component.html',
-    styleUrls:['./alert/alert.component.css']
+    selector:'app-alert',
+    templateUrl:'./alert.component.html',
+    styleUrls:['./alert.component.css']
 })
 export class AlertComponenr{
     @Input() message:string;
