@@ -7,14 +7,11 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import {DropdownDirective} from './shared/dropdown.directive';
 import {HeaderComponent} from './header/header.coomponent';
-import { RecipesComponent } from './recipes/recipes.component';
-import { RecipeListComponent } from './recipes/recipe-list/recipe-list.component';
-import { RecipeDetailComponent } from './recipes/recipe-detail/recipe-detail.component';
-import { RecipeItemComponent } from './recipes/recipe-list/recipe-item/recipe-item.component';
+
+import { RecipesModule } from './recipes/recipes.module';
 import { ShoppingListComponent } from './shopping-list/shopping-list.component';
 import { ShoppingEditComponent } from './shopping-list/shopping-edit/shopping-edit.component';
 import {ShoppingListService } from './shopping-list/shopping-list.service';
-import { RecipeStartComponent } from './recipes/recipe-start/recipe-start.component';
 import { RecipeEditComponent } from './recipes/recipe-edit/recipe-edit.component';
 import { RecipeService } from './recipes/recipe.service';
 import { AuthComponent } from './auth/auth.component';
@@ -28,20 +25,17 @@ import { PlaceholderDirective } from './shared/placeholder/placeholder.directive
     AppComponent,
     DropdownDirective,
     HeaderComponent,
-    RecipesComponent,
-    RecipeListComponent,
-    RecipeDetailComponent,
-    RecipeItemComponent,
+    
+    RecipeEditComponent,
     ShoppingListComponent,
     ShoppingEditComponent,
-    RecipeStartComponent,
-    RecipeEditComponent,
     AuthComponent,
     LoadingSpinnerComponent,
     AlertComponenr,
     PlaceholderDirective
   ],
   imports: [
+    RecipesModule,
     BrowserModule,
     AppRoutingModule,
     FormsModule,
