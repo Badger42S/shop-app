@@ -9,8 +9,7 @@ import {DropdownDirective} from './shared/dropdown.directive';
 import {HeaderComponent} from './header/header.coomponent';
 
 import { RecipesModule } from './recipes/recipes.module';
-import { ShoppingListComponent } from './shopping-list/shopping-list.component';
-import { ShoppingEditComponent } from './shopping-list/shopping-edit/shopping-edit.component';
+import {ShoppingListModule } from './shopping-list/shopping-list.module';
 import {ShoppingListService } from './shopping-list/shopping-list.service';
 import { RecipeEditComponent } from './recipes/recipe-edit/recipe-edit.component';
 import { RecipeService } from './recipes/recipe.service';
@@ -25,10 +24,7 @@ import { PlaceholderDirective } from './shared/placeholder/placeholder.directive
     AppComponent,
     DropdownDirective,
     HeaderComponent,
-    
     RecipeEditComponent,
-    ShoppingListComponent,
-    ShoppingEditComponent,
     AuthComponent,
     LoadingSpinnerComponent,
     AlertComponenr,
@@ -36,6 +32,7 @@ import { PlaceholderDirective } from './shared/placeholder/placeholder.directive
   ],
   imports: [
     RecipesModule,
+    ShoppingListModule,
     BrowserModule,
     AppRoutingModule,
     FormsModule,
