@@ -2,9 +2,12 @@ import {Injectable} from '@angular/core';
 import {HttpClient, HttpErrorResponse} from '@angular/common/http';
 import { catchError, tap } from 'rxjs/operators';
 import { BehaviorSubject, throwError } from 'rxjs';
+import { Store } from '@ngrx/store';
+import { Router } from '@angular/router';
 
 import { UserModel } from './auth.model';
-import { Router } from '@angular/router';
+import * as fromApp from '../store/app.reducer';
+import * as AuthActiions from './store/auth.actions';
 
 export interface AuthResponse {
     idToken: string,
@@ -17,10 +20,10 @@ export interface AuthResponse {
 
 @Injectable({providedIn: 'root'})
 export class AuthService{
-    userSubject = new BehaviorSubject<UserModel>(null);
+    // userSubject = new BehaviorSubject<UserModel>(null);
     private experationTokenTimer:any;
 
-    constructor(private http: HttpClient, private router: Router){}
+    constructor(private http: HttpClient, private router: Router, private store:Store<fromApp.AppState>){}
     
     signup(email:string, password:string){
         return this.http.post<AuthResponse>('https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyAGMAMq5OfCn7KjQGERb-2DBP4522w0ZKM',
@@ -84,12 +87,19 @@ export class AuthService{
                 new Date(userData._tokenExperationDate).getTime() - 
                 new Date().getTime();
             this.autoLogout(experationdDuration);
-            this.userSubject.next(loadedUser);
+            // this.userSubject.next(loadedUser);
+            this.store.dispatch(new AuthActiions.Login({
+                email:loadedUser.email, 
+                userId:loadedUser.id,
+                token:loadedUser.token, 
+                experationDate: new Date(userData._tokenExperationDate)
+            }));
         }
     }
 
     logout(){
-        this.userSubject.next(null);
+        // this.userSubject.next(null);
+        this.store.dispatch(new AuthActiions.Logout());
         this.router.navigate(['/auth']);
         localStorage.removeItem('user');
         if(this.experationTokenTimer){
@@ -111,7 +121,13 @@ export class AuthService{
             experationDate
         );
 
-        this.userSubject.next(user);
+        // this.userSubject.next(user);
+        this.store.dispatch(new AuthActiions.Login({
+            email:email, 
+            userId:userId,
+            token:token, 
+            experationDate: experationDate
+        }));
         this.autoLogout(experationIn*1000);
         localStorage.setItem('user', JSON.stringify(user));
     }
