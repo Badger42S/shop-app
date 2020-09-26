@@ -16,8 +16,58 @@ export interface AuthResponse {
     registered?: boolean
 }
 
+const handleAuthentication = (email:string, localId:string, idToken:string, expiresIn:string)=>{
+    const experationDate=new Date(+expiresIn*1000 + new Date().getTime());
+    return new AuthActions.AuthenticateSuccess(
+        {
+            email: email,
+            userId: localId, 
+            token: idToken, 
+            experationDate:experationDate
+        }
+    );
+};
+const handleError = (errResponse:any)=>{
+    let errMessage='Welcome into the unknow';
+    if(!errResponse.error || !errResponse.error.error){
+        return of(new AuthActions.AuthenticateFail(errMessage));
+    }
+    switch(errResponse.error.error.message){
+    case 'EMAIL_EXSIST':
+        errMessage ='This email exsist already';
+        break;
+    case 'EMAIL_NOT_FOUND':
+        errMessage ='There is no user record corresponding to this identifier';
+        break;
+    case 'INVALID_PASSWORD':
+        errMessage ='The password is invalid';
+        break;
+    }
+    return of(new AuthActions.AuthenticateFail(errMessage));
+};
+
 @Injectable()
 export class AuthEffests{
+    @Effect()
+    authSignup=this.actions$.pipe(
+        ofType(AuthActions.SIGNUP_START),
+        switchMap((signupAction: AuthActions.SignupStart)=>{
+            return this.http.post<AuthResponse>('https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyAGMAMq5OfCn7KjQGERb-2DBP4522w0ZKM',
+            {
+                email:signupAction.data.email,
+                password:signupAction.data.password,
+                returnSecureToken:true
+            }
+        ).pipe(
+            map(respData=>{
+                return handleAuthentication(respData.email, respData.localId, respData.idToken, respData.expiresIn);
+            }),
+            catchError(errResponse=>{
+                return handleError(errResponse)
+            }))
+        })
+    );
+
     @Effect()
     authLogin = this.actions$.pipe(
         ofType(AuthActions.LOGIN_START),
@@ -30,40 +80,17 @@ export class AuthEffests{
             }
         ).pipe(
             map(respData=>{
-                const experationDate=new Date(+respData.expiresIn*1000 + new Date().getTime());
-                return new AuthActions.Login(
-                    {
-                        email:respData.email,
-                        userId: respData.localId, 
-                        token: respData.idToken, 
-                        experationDate:experationDate
-                    }
-                );
+                return handleAuthentication(respData.email, respData.localId, respData.idToken, respData.expiresIn);
             }),
             catchError(errResponse=>{
-                let errMessage='Welcome into the unknow';
-                if(!errResponse.error || !errResponse.error.error){
-                    return of(new AuthActions.LoginFail(errMessage));
-                }
-                switch(errResponse.error.error.message){
-                case 'EMAIL_EXSIST':
-                    errMessage ='This email exsist already';
-                    break;
-                case 'EMAIL_NOT_FOUND':
-                    errMessage ='There is no user record corresponding to this identifier';
-                    break;
-                case 'INVALID_PASSWORD':
-                    errMessage ='The password is invalid';
-                    break;
-                }
-                return of(new AuthActions.LoginFail(errMessage));
+                return handleError(errResponse)
             }))
         })
     );
 
     @Effect({dispatch:false})
     authSuccess = this.actions$.pipe(
-        ofType(AuthActions.LOGIN),
+        ofType(AuthActions.AUTHENTICATE_SUCCESS),
         tap(()=>{
             this.router.navigate(['/']);
         })

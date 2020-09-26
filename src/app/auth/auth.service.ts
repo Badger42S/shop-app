@@ -88,7 +88,7 @@ export class AuthService{
                 new Date().getTime();
             this.autoLogout(experationdDuration);
             // this.userSubject.next(loadedUser);
-            this.store.dispatch(new AuthActiions.Login({
+            this.store.dispatch(new AuthActiions.AuthenticateSuccess({
                 email:loadedUser.email, 
                 userId:loadedUser.id,
                 token:loadedUser.token, 
@@ -122,7 +122,7 @@ export class AuthService{
         );
 
         // this.userSubject.next(user);
-        this.store.dispatch(new AuthActiions.Login({
+        this.store.dispatch(new AuthActiions.AuthenticateSuccess({
             email:email, 
             userId:userId,
             token:token, 
