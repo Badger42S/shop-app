@@ -4,6 +4,7 @@ import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {HttpClientModule, HTTP_INTERCEPTORS} from '@angular/common/http';
 import {StoreModule} from '@ngrx/store';
 import {EffectsModule} from '@ngrx/effects';
+import {StoreDevtoolsModule} from '@ngrx/store-devtools'
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -23,6 +24,7 @@ import { AlertComponenr } from './shared/alert/alert.component';
 import { PlaceholderDirective } from './shared/placeholder/placeholder.directive';
 import { AuthEffests } from './auth/auth.effects';
 import * as fromApp from './store/app.reducer';
+import { environment } from 'src/environments/environment';
 
 @NgModule({
   declarations: [
@@ -44,7 +46,8 @@ import * as fromApp from './store/app.reducer';
     ReactiveFormsModule,
     HttpClientModule,
     StoreModule.forRoot(fromApp.appreducer),
-    EffectsModule.forRoot([AuthEffests])
+    EffectsModule.forRoot([AuthEffests]),
+    StoreDevtoolsModule.instrument({logOnly:environment.production})
   ],
   providers: [ShoppingListService, RecipeService, {
     provide:HTTP_INTERCEPTORS,
