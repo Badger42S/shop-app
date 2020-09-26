@@ -1,4 +1,4 @@
-import {Recipe} from './recipe.modal';
+import {Recipe} from './recipe.model';
 import { Injectable } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { Subject } from 'rxjs';
