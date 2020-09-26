@@ -25,77 +25,77 @@ export class AuthService{
 
     constructor(private http: HttpClient, private router: Router, private store:Store<fromApp.AppState>){}
     
-    signup(email:string, password:string){
-        return this.http.post<AuthResponse>('https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyAGMAMq5OfCn7KjQGERb-2DBP4522w0ZKM',
-            {
-                email:email,
-                password:password,
-                returnSecureToken:true
-            }
-        ).pipe(
-            catchError(this.handleError),
-            tap(respData=>{
-                this.handleAuth(
-                    respData.email, 
-                    respData.localId, 
-                    respData.idToken, 
-                    +respData.expiresIn
-                );
-            })
-        );
-    }
+    // signup(email:string, password:string){
+    //     return this.http.post<AuthResponse>('https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyAGMAMq5OfCn7KjQGERb-2DBP4522w0ZKM',
+    //         {
+    //             email:email,
+    //             password:password,
+    //             returnSecureToken:true
+    //         }
+    //     ).pipe(
+    //         catchError(this.handleError),
+    //         tap(respData=>{
+    //             this.handleAuth(
+    //                 respData.email, 
+    //                 respData.localId, 
+    //                 respData.idToken, 
+    //                 +respData.expiresIn
+    //             );
+    //         })
+    //     );
+    // }
 
-    login(email:string, password:string){
-        return this.http.post<AuthResponse>('https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyAGMAMq5OfCn7KjQGERb-2DBP4522w0ZKM',
-            {
-                email:email,
-                password:password,
-                returnSecureToken:true
-            }
-        ).pipe(
-            catchError(this.handleError),
-            tap(respData=>{
-                this.handleAuth(
-                    respData.email, 
-                    respData.localId, 
-                    respData.idToken, 
-                    +respData.expiresIn
-                );
-            })
-        );
-    }
+    // login(email:string, password:string){
+    //     return this.http.post<AuthResponse>('https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyAGMAMq5OfCn7KjQGERb-2DBP4522w0ZKM',
+    //         {
+    //             email:email,
+    //             password:password,
+    //             returnSecureToken:true
+    //         }
+    //     ).pipe(
+    //         catchError(this.handleError),
+    //         tap(respData=>{
+    //             this.handleAuth(
+    //                 respData.email, 
+    //                 respData.localId, 
+    //                 respData.idToken, 
+    //                 +respData.expiresIn
+    //             );
+    //         })
+    //     );
+    // }
 
-    autoLogin(){
-        const userData:{
-            email:string, 
-            id:string, 
-            _token:string, 
-            _tokenExperationDate:string
-        } = JSON.parse(localStorage.getItem('user'));
-        if(!userData){
-            return;
-        }
-        const loadedUser=new UserModel(
-            userData.email,
-            userData.id,
-            userData._token,
-            new Date(userData._tokenExperationDate)
-        );
+    // autoLogin(){
+    //     const userData:{
+    //         email:string, 
+    //         id:string, 
+    //         _token:string, 
+    //         _tokenExperationDate:string
+    //     } = JSON.parse(localStorage.getItem('user'));
+    //     if(!userData){
+    //         return;
+    //     }
+    //     const loadedUser=new UserModel(
+    //         userData.email,
+    //         userData.id,
+    //         userData._token,
+    //         new Date(userData._tokenExperationDate)
+    //     );
 
-        if(loadedUser.token ){
-            const experationdDuration = 
-                new Date(userData._tokenExperationDate).getTime() - 
-                new Date().getTime();
-            this.autoLogout(experationdDuration);
-            // this.userSubject.next(loadedUser);
-            this.store.dispatch(new AuthActiions.AuthenticateSuccess({
-                email:loadedUser.email, 
-                userId:loadedUser.id,
-                token:loadedUser.token, 
-                experationDate: new Date(userData._tokenExperationDate)
-            }));
-        }
-    }
+    //     if(loadedUser.token ){
+    //         const experationdDuration = 
+    //             new Date(userData._tokenExperationDate).getTime() - 
+    //             new Date().getTime();
+    //         this.autoLogout(experationdDuration);
+    //         // this.userSubject.next(loadedUser);
+    //         this.store.dispatch(new AuthActiions.AuthenticateSuccess({
+    //             email:loadedUser.email, 
+    //             userId:loadedUser.id,
+    //             token:loadedUser.token, 
+    //             experationDate: new Date(userData._tokenExperationDate)
+    //         }));
+    //     }
+    // }
 
     logout(){
         // this.userSubject.next(null);
@@ -108,29 +108,38 @@ export class AuthService{
         this.experationTokenTimer=null;
     }
 
-    autoLogout(experationduration: number){
-        this.experationTokenTimer=setTimeout(()=>{this.logout()} ,experationduration);
+    setLogoutTimer(experationduration: number){
+        this.experationTokenTimer=setTimeout(()=>{
+            this.store.dispatch(new AuthActiions.Logout())
+        } ,experationduration);
     }
 
-    private handleAuth(email:string, userId:string, token:string, experationIn:number){
-        const experationDate=new Date(experationIn*1000 + new Date().getTime());
-        const user =new UserModel(
-            email, 
-            userId,
-            token, 
-            experationDate
-        );
-
-        // this.userSubject.next(user);
-        this.store.dispatch(new AuthActiions.AuthenticateSuccess({
-            email:email, 
-            userId:userId,
-            token:token, 
-            experationDate: experationDate
-        }));
-        this.autoLogout(experationIn*1000);
-        localStorage.setItem('user', JSON.stringify(user));
+    clearLogoutTimer(){
+        if(this.experationTokenTimer){
+            clearTimeout(this.experationTokenTimer);
+            this.experationTokenTimer=null;
+        }
     }
+
+    // private handleAuth(email:string, userId:string, token:string, experationIn:number){
+    //     const experationDate=new Date(experationIn*1000 + new Date().getTime());
+    //     const user =new UserModel(
+    //         email, 
+    //         userId,
+    //         token, 
+    //         experationDate
+    //     );
+
+    //     // this.userSubject.next(user);
+    //     this.store.dispatch(new AuthActiions.AuthenticateSuccess({
+    //         email:email, 
+    //         userId:userId,
+    //         token:token, 
+    //         experationDate: experationDate
+    //     }));
+    //     this.autoLogout(experationIn*1000);
+    //     localStorage.setItem('user', JSON.stringify(user));
+    // }
 
     private handleError(errResponse: HttpErrorResponse){
         let errMessage='Welcome into the unknow';
