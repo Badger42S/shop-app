@@ -144,7 +144,7 @@ export class AuthEffests{
         tap(()=>{
             this.authService.clearLogoutTimer();
             localStorage.removeItem('user');
-            this.router.navigate(['/']);
+            this.router.navigate(['/auth']);
         })
     )
 
