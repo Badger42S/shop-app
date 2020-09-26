@@ -2,11 +2,11 @@ import { Component, OnInit, Output, EventEmitter, OnDestroy } from '@angular/cor
 import { Store } from '@ngrx/store';
 import { Subscription } from 'rxjs';
 import {  Router, ActivatedRoute } from '@angular/router';
+import { map } from 'rxjs/operators';
 
 import {Recipe} from '../recipe.model';
 import {RecipeService} from '../recipe.service';
 import * as fromApp from '../../store/app.reducer';
-import { map } from 'rxjs/operators';
 
 @Component({
   selector: 'app-recipe-list',
