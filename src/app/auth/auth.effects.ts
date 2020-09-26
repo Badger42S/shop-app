@@ -6,6 +6,7 @@ import { of } from 'rxjs';
 import * as AuthActions from './store/auth.actions';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
+import { UserModel } from './auth.model';
 
 export interface AuthResponse {
     idToken: string,
@@ -18,6 +19,8 @@ export interface AuthResponse {
 
 const handleAuthentication = (email:string, localId:string, idToken:string, expiresIn:string)=>{
     const experationDate=new Date(+expiresIn*1000 + new Date().getTime());
+    const user = new UserModel(email, localId, idToken, experationDate);
+    localStorage.setItem('user', JSON.stringify(user));
     return new AuthActions.AuthenticateSuccess(
         {
             email: email,
@@ -87,6 +90,50 @@ export class AuthEffests{
             }))
         })
     );
+
+    @Effect()
+    autoLogin = this.actions$.pipe(
+        ofType(AuthActions.AUTO_LOGIN),
+        map(()=>{
+            const userData:{
+                email:string, 
+                id:string, 
+                _token:string, 
+                _tokenExperationDate:string
+            } = JSON.parse(localStorage.getItem('user'));
+            if(!userData){
+                return {type: 'lol'};
+            }
+            const loadedUser=new UserModel(
+                userData.email,
+                userData.id,
+                userData._token,
+                new Date(userData._tokenExperationDate)
+            );
+    
+            if(loadedUser.token ){
+                return new AuthActions.AuthenticateSuccess({
+                    email:loadedUser.email, 
+                    userId:loadedUser.id,
+                    token:loadedUser.token, 
+                    experationDate: new Date(userData._tokenExperationDate)
+                })
+                // const experationdDuration = 
+                //     new Date(userData._tokenExperationDate).getTime() - 
+                //     new Date().getTime();
+                // this.autoLogout(experationdDuration);
+            }
+            return {type: 'lol'};
+        })
+    )
+
+    @Effect({dispatch:false})
+    authLogout = this.actions$.pipe(
+        ofType(AuthActions.LOGOUT),
+        tap(()=>{
+            localStorage.removeItem('user');
+        })
+    )
 
     @Effect({dispatch:false})
     authRedirect = this.actions$.pipe(
