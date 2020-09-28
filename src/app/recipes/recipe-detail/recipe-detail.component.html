@@ -10,19 +10,23 @@
 </div>
 <div class="row">
     <div class="col-xs-12">
-        <div
-        class="btn-group"
-        app-dropdown 
-        >
-            <button type="button" class="btn btn-primary dropdown-toggle">Manage recipe <span class="caret"></span></button>
-            <ul class="dropdown-menu">
-                <li>
+        <!-- <div class="btn-group" app-dropdown > -->
+            <!-- <button 
+                type="button" 
+                class="btn btn-primary dropdown-toggle"
+            >Manage recipe <span class="caret"></span></button> -->
+            <ul class="list-group">
+                <li class="list-group-item">
                     <a style="cursor:pointer" (click)="onAddToShoppingList()" >add</a>
+                </li>
+                <li class="list-group-item">
                     <a style="cursor:pointer" (click)="onEditRecipe()">edit</a>
+                </li>
+                <li class="list-group-item">
                     <a style="cursor:pointer" (click)="onDelete()">delete</a>
                 </li>
             </ul>
-        </div>
+        <!-- </div> -->
     </div>
 </div>
 <div class="row">
