@@ -22,9 +22,10 @@ import {shoppingListReduxer } from './shopping-list/store/shopping-list.reducer'
 import { authReducer } from './auth/store/auth.reducer';
 import { AlertComponenr } from './shared/alert/alert.component';
 import { PlaceholderDirective } from './shared/placeholder/placeholder.directive';
-import { AuthEffests } from './auth/auth.effects';
 import * as fromApp from './store/app.reducer';
 import { environment } from 'src/environments/environment';
+import { AuthEffests } from './auth/auth.effects';
+import { RecipeEffects } from './recipes/store/recipe.effects';
 
 @NgModule({
   declarations: [
@@ -46,7 +47,7 @@ import { environment } from 'src/environments/environment';
     ReactiveFormsModule,
     HttpClientModule,
     StoreModule.forRoot(fromApp.appreducer),
-    EffectsModule.forRoot([AuthEffests]),
+    EffectsModule.forRoot([AuthEffests, RecipeEffects]),
     StoreDevtoolsModule.instrument({logOnly:environment.production})
   ],
   providers: [ShoppingListService, RecipeService, {
