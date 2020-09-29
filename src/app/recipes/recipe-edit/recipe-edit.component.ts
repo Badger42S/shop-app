@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { FormGroup, FormControl, FormArray, Validators } from '@angular/forms';
 import { Store } from '@ngrx/store';
@@ -8,16 +8,18 @@ import { RecipeService } from '../recipe.service';
 import { Recipe } from '../recipe.model';
 import * as fromApp from '../../store/app.reducer';
 import * as RecipesActions from '../store/recipe.actions';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-recipe-edit',
   templateUrl: './recipe-edit.component.html',
   styleUrls: ['./recipe-edit.component.css']
 })
-export class RecipeEditComponent implements OnInit {
+export class RecipeEditComponent implements OnInit, OnDestroy {
   id:number;
   editMode:boolean=false;
   recipeForm:FormGroup;
+  private storeSub:Subscription;
 
   get controls(){
     return (<FormArray>this.recipeForm.get('ingredients')).controls;
@@ -29,16 +31,22 @@ export class RecipeEditComponent implements OnInit {
     private router:Router,
     private store:Store<fromApp.AppState>
   ) { }     
-
+  
   ngOnInit(): void {
     this.route.params
-      .subscribe(
-        (params:Params)=>{
-          this.id=+params['id'];
-          this.editMode=params['id'] !=null;
-          this.initForm();
-        }
+    .subscribe(
+      (params:Params)=>{
+        this.id=+params['id'];
+        this.editMode=params['id'] !=null;
+        this.initForm();
+      }
       )
+    }
+    
+  ngOnDestroy(): void {
+    if(this.storeSub){
+      this.storeSub.unsubscribe();
+    }
   }
 
   private initForm(){
@@ -49,7 +57,7 @@ export class RecipeEditComponent implements OnInit {
 
     if(this.editMode){
       // const recipe=this.recipeService.getRecipe(this.id);
-      this.store.select('recipes').pipe(
+      this.storeSub= this.store.select('recipes').pipe(
         map(recipeState=>{
           return recipeState.recipes.find((recipe, index)=>{
             return index===this.id;
